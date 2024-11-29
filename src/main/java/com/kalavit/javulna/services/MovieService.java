@@ -41,28 +41,18 @@ public class MovieService {
     MovieAutoDao movieAutoDao;
     
     public List<MovieDto> findMovie(String title, String description, String genre, String id) {
-        int conditions = 0;
-        StringBuilder sql = new StringBuilder("select description, title, genre, id from movie ");
+        StringBuilder sql = new StringBuilder("select description, title, genre, id from movie where 1=1");
         if (StringUtils.hasText(title)) {
-            appendCondition(sql, conditions);
-            conditions++;
-            sql.append("title LIKE '%").append(title).append("%'");
-
+            sql.append(" and title LIKE ?");
         }
         if (StringUtils.hasText(description)) {
-            appendCondition(sql, conditions);
-            conditions++;
-            sql.append("description LIKE '%").append(description).append("%'");
+            sql.append(" and description LIKE ?");
         }
         if (StringUtils.hasText(genre)) {
-            appendCondition(sql, conditions);
-            conditions++;
-            sql.append("genre LIKE '%").append(genre).append("%'");
+            sql.append(" and genre LIKE ?");
         }
         if (StringUtils.hasText(id)) {
-            appendCondition(sql, conditions);
-            conditions++;
-            sql.append("id = '").append(id).append("'");
+            sql.append(" and id = ?");
         }
         LOG.debug(sql.toString());
         List<MovieDto> users = this.jdbcTemplate.query(sql.toString(), new RowMapper<MovieDto>() {
@@ -75,7 +65,11 @@ public class MovieService {
                 ret.setId(rs.getString("id"));
                 return ret;
             }
-        });
+        }, 
+        StringUtils.hasText(title) ? "%" + title + "%" : null,
+        StringUtils.hasText(description) ? "%" + description + "%" : null,
+        StringUtils.hasText(genre) ? "%" + genre + "%" : null,
+        StringUtils.hasText(id) ? id : null);
 
         return users;
     }
