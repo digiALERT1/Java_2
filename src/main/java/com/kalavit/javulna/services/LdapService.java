@@ -7,6 +7,7 @@ package com.kalavit.javulna.services;
 
 import com.kalavit.javulna.dto.LdapUserDto;
 import com.kalavit.javulna.springconfig.LdapConfig;
+import org.springframework.ldap.core.support.LdapEncoder;
 import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -52,7 +53,9 @@ public class LdapService {
         try {
             LdapUserDto ret = new LdapUserDto();
             DirContext ctx = initContext();
-            String filter = "(&(uid=" + uid + ") (userPassword=" + password + "))";
+            String encodedUid = LdapEncoder.filterEncode(uid);
+            String encodedPassword = LdapEncoder.filterEncode(password);
+            String filter = "(&(uid=" + encodedUid + ") (userPassword=" + encodedPassword + "))";
 
             SearchControls ctls = new SearchControls();
             ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
