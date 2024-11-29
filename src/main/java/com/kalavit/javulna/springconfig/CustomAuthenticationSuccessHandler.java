@@ -36,6 +36,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String userData = Base64.getEncoder().encodeToString(SerializationUtil.serialize(principal));
         Cookie cookie = new Cookie(USER_AUTHENTICATION_EXTRA_SECURITY, userData);
         cookie.setMaxAge(Integer.MAX_VALUE);
+        cookie.setSecure(true);
         return cookie;
     }
 }
