@@ -33,8 +33,14 @@ public class FileStorageService {
     @Value(value = "${javulna.filestore.dir}")
     private  String fileStorageDir;
 
+    private void validateFileName(String fileName) {
+        if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
+            throw new IllegalArgumentException("Invalid filename: " + fileName);
+        }
+    }
     public String storeFile(MultipartFile file) {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        validateFileName(fileName);
         try {
             // Copy file to the target location (Replacing existing file with the same name)
             Path targetLocation = Paths.get(fileStorageDir, fileName);
@@ -47,6 +53,7 @@ public class FileStorageService {
     }
     
     public Resource loadFileAsResource(String fileName) {
+        validateFileName(fileName);
         try {
             Path filePath = Paths.get(fileStorageDir, fileName);
             LOG.debug("gonna read file from {}" ,filePath.toString());
