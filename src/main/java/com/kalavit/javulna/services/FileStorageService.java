@@ -47,6 +47,10 @@ public class FileStorageService {
     }
     
     public Resource loadFileAsResource(String fileName) {
+        // Validate the fileName to ensure it does not contain any path separators or parent directory references
+        if (fileName.contains("..") || fileName.contains("/") || fileName.contains("\\")) {
+            throw new IllegalArgumentException("Invalid file name: " + fileName);
+        }
         try {
             Path filePath = Paths.get(fileStorageDir, fileName);
             LOG.debug("gonna read file from {}" ,filePath.toString());
